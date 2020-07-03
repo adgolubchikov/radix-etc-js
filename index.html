@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
+<title>Integer operations</title>
+</head>
+<body>
+<script>
+function id(e){return document.getElementById(e)}
+
+function base_convert(number, frombase, tobase) {
+    return parseInt(number + '', frombase | 0).toString(tobase | 0);
+}
+
+
+function base_convert_float(num, from, to) {
+    if (num.toString().indexOf('.') == -1) return base_convert(num, from, to);
+    h = num.toString().toLowerCase().split('.');
+    hl = h[1].length;
+    dec = base_convert(h[1], from, 10) / Math.pow(from, hl);
+
+    res_str = '';
+    for (i = 0; i < 8; i++) {
+        dec *= to;
+        res_str += base_convert(Math.floor(dec), 10, to);
+        dec -= Math.floor(dec);
+    }
+    pre = base_convert(h[0], from, to) + '.' + res_str;
+
+    for (j = 0; j <= pre.length; j++) {
+        if (pre.substr((pre.length - 1), 1) == '0') pre = pre.substr(0, (pre.length - 1));
+    }
+
+    return pre;
+}
+
+
+function plus(a, sys_a, b, sys_b, sys_result) {
+    a10 = base_convert_float(a, sys_a, 10);
+    b10 = base_convert_float(b, sys_b, 10);
+    res = parseFloat(a10) + parseFloat(b10);
+
+    return base_convert_float(res.toString(), 10, sys_result);
+}
+
+function minus(a, sys_a, b, sys_b, sys_result) {
+    a10 = base_convert_float(a, sys_a, 10);
+    b10 = base_convert_float(b, sys_b, 10);
+    res = parseFloat(a10) - parseFloat(b10);
+
+    return base_convert_float(res.toString(), 10, sys_result);
+}
+
+function umn(a, sys_a, b, sys_b, sys_result) {
+    a10 = base_convert_float(a, sys_a, 10);
+    b10 = base_convert_float(b, sys_b, 10);
+    res = parseFloat(a10) * parseFloat(b10);
+
+    return base_convert_float(res.toString(), 10, sys_result);
+}
+
+function del(a, sys_a, b, sys_b, sys_result) {
+    a10 = base_convert_float(a, sys_a, 10);
+    b10 = base_convert_float(b, sys_b, 10);
+    res = parseFloat(a10) / parseFloat(b10);
+
+    return base_convert_float(res.toString(), 10, sys_result);
+}
+
+function doconv() {
+    n = document.getElementById('conv_n').value;
+    b1 = parseInt(document.getElementById('conv_b1').value);
+    b2 = parseInt(document.getElementById('conv_b2').value);
+
+    document.getElementById('conv_result').innerHTML = n + '<sub>' + b1 + '</sub> = ' + base_convert_float(n, b1, b2) + '<sub>' + b2 + '</sub>';
+}
+
+function docalc() {
+    n1 = document.getElementById('calc_1').value.toString();
+    n2 = document.getElementById('calc_2').value.toString();
+    b1 = parseInt(document.getElementById('calc_1b').value);
+    b2 = parseInt(document.getElementById('calc_2b').value);
+    rb = parseInt(document.getElementById('calc_rb').value);
+
+    action = document.getElementById('calc').value;
+    if (action == 'plus') {
+        document.getElementById('calc_result').innerHTML = n1 + '<sub>' + b1 + '</sub>' + ' + ' + n2 + '<sub>' + b2 + '</sub> = ' + plus(n1, b1, n2, b2, rb) + '<sub>' + rb + '</sub>';
+    } else {
+        if (action == 'minus') {
+            document.getElementById('calc_result').innerHTML = n1 + '<sub>' + b1 + '</sub>' + ' - ' + n2 + '<sub>' + b2 + '</sub> = ' + minus(n1, b1, n2, b2, rb) + '<sub>' + rb + '</sub>';
+        } else {
+            if (action == 'umn') {
+                document.getElementById('calc_result').innerHTML = n1 + '<sub>' + b1 + '</sub>' + ' * ' + n2 + '<sub>' + b2 + '</sub> = ' + umn(n1, b1, n2, b2, rb) + '<sub>' + rb + '</sub>';
+            } else {
+                if (action == 'del') {
+                    document.getElementById('calc_result').innerHTML = n1 + '<sub>' + b1 + '</sub>' + ' / ' + n2 + '<sub>' + b2 + '</sub> = ' + del(n1, b1, n2, b2, rb) + '<sub>' + rb + '</sub>';
+                }
+            }
+        }
+    }
+}
+
+
+
+
+function factorize() {
+    let n = parseInt(id('fact').value);
+    let str = '';
+
+    let root = Math.sqrt(n);
+    let currentValue = n;
+    let multiplier = 2;
+
+    let a = [];
+
+    while ((currentValue > 1) && (multiplier <= root)) {
+        if (currentValue % multiplier == 0) {
+            a.push(multiplier);
+            currentValue /= multiplier;
+        } else if (multiplier == 2) {
+            multiplier++;
+        } else {
+            multiplier += 2;
+        }
+    }
+    if (currentValue != 1) {
+        a.push(currentValue);
+    }
+
+    if (n < 1) {
+        str = 'It works only when N>0';
+        id('factorization').innerHTML = str;
+        return;
+    }
+
+    if (a.length == 0) {
+        str = '1 hasn\'t prime factors';
+        id('factorization').innerHTML = str;
+        return;
+    }
+
+
+    str = n + ' = ';
+    for (let i = 0; i < (a.length - 1); i++) {
+        str += a[i] + '*';
+
+    }
+    str += a[a.length - 1];
+    id('factorization').innerHTML = str;
+
+}
+
+
+
+
+
+function getGCD() {
+    let w, x, y;
+    x = parseInt(id('a').value);
+    y = parseInt(id('b').value);
+    if (!x || !y) { return false; }
+    while (y != 0) {
+        w = x % y;
+        x = y;
+        y = w;
+    }
+    return x;
+}
+
+function getLCM() {
+    let gcd = getGCD();
+    if (!gcd) { return false; }
+    let lcm = (parseInt(id('a').value) * parseInt(id('b').value)) / gcd;
+    id('lcmA').value = lcm;
+    id('gcdA').value = gcd;
+}
+
+</script>
+<center>
+<table border="1">
+<tr><td colspan="3">
+<form onsubmit="return false">
+<h3>Converter</h3>
+Number: <input type="text" id="conv_n" /><br/>
+Original radix: <input type="number" min="2" max="36" step="1" id="conv_b1" size="3" /><br/>
+Target radix:<input type="number" min="2" max="36" step="1" id="conv_b2" size="3" /><br/>
+<input type="submit" value="Convert" onclick="doconv()" />
+<div id="conv_result"></div>
+</form>
+</td>
+<td colspan="3">
+<form onsubmit="return false">
+<h3>Calculator</h3>
+Action:
+<select id="calc">
+<option value="plus">Addition</option>
+<option value="minus">Substraction</option>
+<option value="umn">Multiplication</option>
+<option value="del">Division</option>
+</select>
+<br/>
+First number: <input type="text" id="calc_1" /><br/>
+First radix: <input type="number" min="2" max="36" step="1" id="calc_1b" size="3" /><br/>
+Second number: <input type="text" id="calc_2" /><br/>
+Second radix: <input type="number" min="2" max="36" step="1" id="calc_2b" size="3" /><br/>
+Target radix: <input type="number" min="2" max="36" step="1" id="calc_rb" size="3" /><br/>
+<input type="submit" value="Calculate" onclick="docalc()" />
+<div id="calc_result"></div>
+</form>
+</td>
+</tr>
+
+
+<tr>
+<td colspan="6">
+<center><b>GCD and LCM</b></center>
+      <table>
+        <tr align="middle">
+          <td><b>First number</b><br /><input id="a" type="number" min="1" style="text-align: center" maxLength="10" onkeyup="getLCM()" /> </td>
+		  <td width="50"></td>
+		  <td><b>Second number</b><br /><input id="b" type="number" min="1" style="text-align: center" maxLength="10" onkeyup="getLCM()" /> </td></tr>
+        <tr align="middle">
+          <td>Least common multiple <b>(LCM)</b><br /><input id="lcmA" style="text-align: center" disabled /> </td>
+		  <td width="50"></td>
+		  <td>Greatest common divisor <b>(GCD)</b><br /><input id="gcdA" style="text-align: center" disabled /> </td></tr>
+		</table>
+</td>
+</tr>
+
+<tr>
+<td colspan="6">
+<center><b>Factorization to prime numbers</b><br/></center>
+<form onsubmit="return false"><b>Enter number:</b> <input id="fact" type="number" style="text-align: center" maxLength="16" size="14" /><input onclick="factorize()" type="submit" value="Factorize" /></form>
+<span id="factorization"></span>
+</td>
+</tr>
+</table>
+</center>
+</body>
+</html>
